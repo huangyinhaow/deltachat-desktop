@@ -5,11 +5,18 @@ import {
   DeltaDialogHeader,
   DeltaDialogBody,
   DeltaDialogContent,
+  DeltaDialogContentTextSeperator,
   DeltaDialogOkCancelFooter,
 } from './DeltaDialog'
+import ChatListItem from '../chat/ChatListItem'
 import { useContactSearch, AddMemberInnerDialog } from './CreateChat'
+import { useChatList } from '../chat/ChatListHelpers'
 import { QrCodeShowQrInner } from './QrCode'
+import { selectChat } from '../helpers/ChatMethods'
+import { useThemeCssVar } from '../../ThemeManager'
 import { ContactList2, useContactsMap } from '../contact/ContactList'
+import { useLogicVirtualChatList, ChatListPart } from '../chat/ChatList'
+import AutoSizer from 'react-virtualized-auto-sizer'
 import {
   PseudoListItemShowQrCode,
   PseudoListItemAddMember,
@@ -146,6 +153,17 @@ function ViewGroupInner(props: {
   const { viewMode, setViewMode, onClose, chat, isBroadcast } = props
   const tx = useTranslationFunction()
 
+  const [chatListIds, setChatListIds] = useState<[number, number][]>([])
+
+  useEffect(() => {
+    BackendRemote.rpc
+      .getSimilarChatlistEntries(selectedAccountId(), chat.id)
+      .then(setChatListIds)
+  }, [])
+
+  const { isChatLoaded, loadChats, chatCache } =
+    useLogicVirtualChatList(chatListIds)
+
   const chatDisabled = !chat.canSend
 
   const {
@@ -217,6 +235,14 @@ function ViewGroupInner(props: {
     null
   )
 
+  const onChatClick = (chatId: number) => {
+    selectChat(chatId)
+    onClose()
+  }
+
+  const CHATLISTITEM_CHAT_HEIGHT =
+    Number(useThemeCssVar('--SPECIAL-chatlist-item-chat-height')) || 64
+
   return (
     <>
       {viewMode === 'main' && (
@@ -285,6 +311,34 @@ function ViewGroupInner(props: {
                   onRemoveClick={showRemoveGroupMemberConfirmationDialog}
                 />
               </div>
+              <DeltaDialogContentTextSeperator
+                text={tx('profile_shared_chats')}
+              />
+              <AutoSizer>
+                {({ width, height }) => (
+              <ChatListPart
+                isRowLoaded={isChatLoaded}
+                loadMoreRows={loadChats}
+                rowCount={chatListIds.length}
+                width={width}
+                height={height}
+                itemKey={index => 'key' + chatListIds[index]}
+                itemHeight={CHATLISTITEM_CHAT_HEIGHT}
+              >
+                {({ index, style }) => {
+                  const [chatId] = chatListIds[index]
+                  return (
+                    <div style={style}>
+                      <ChatListItem
+                        chatListItem={chatCache[chatId] || undefined}
+                        onClick={onChatClick.bind(null, chatId)}
+                      />
+                    </div>
+                  )
+                }}
+              </ChatListPart>
+                 )}
+              </AutoSizer>
             </Card>
           </div>
         </>
