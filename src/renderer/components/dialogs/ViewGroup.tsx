@@ -16,7 +16,6 @@ import { selectChat } from '../helpers/ChatMethods'
 import { useThemeCssVar } from '../../ThemeManager'
 import { ContactList2, useContactsMap } from '../contact/ContactList'
 import { useLogicVirtualChatList, ChatListPart } from '../chat/ChatList'
-import AutoSizer from 'react-virtualized-auto-sizer'
 import {
   PseudoListItemShowQrCode,
   PseudoListItemAddMember,
@@ -276,33 +275,33 @@ function ViewGroupInner(props: {
               </div>
               <div className='group-separator'>
                 {tx('profile_shared_chats')}
-	      </div>
-	      <div style={{height: CHATLISTITEM_CHAT_HEIGHT * chatListIds.length}}>
-              <AutoSizer>
-                {({ width, height }) => (
-                  <ChatListPart
-                    isRowLoaded={isChatLoaded}
-                    loadMoreRows={loadChats}
-                    rowCount={chatListIds.length}
-                    width={width}
-                    height={height}
-                    itemKey={index => 'key' + chatListIds[index]}
-                    itemHeight={CHATLISTITEM_CHAT_HEIGHT}
-                  >
-                    {({ index, style }) => {
-                      const [chatId] = chatListIds[index]
-                      return (
-                        <div style={style}>
-                          <ChatListItem
-                            chatListItem={chatCache[chatId] || undefined}
-                            onClick={onChatClick.bind(null, chatId)}
-                          />
-                        </div>
-                      )
-                    }}
-                  </ChatListPart>
-                )}
-              </AutoSizer>
+              </div>
+              <div
+                style={{
+                  height: CHATLISTITEM_CHAT_HEIGHT * chatListIds.length,
+                }}
+              >
+                <ChatListPart
+                  isRowLoaded={isChatLoaded}
+                  loadMoreRows={loadChats}
+                  rowCount={chatListIds.length}
+                  width={'500px'}
+                  height={CHATLISTITEM_CHAT_HEIGHT * chatListIds.length}
+                  itemKey={index => 'key' + chatListIds[index]}
+                  itemHeight={CHATLISTITEM_CHAT_HEIGHT}
+                >
+                  {({ index, style }) => {
+                    const [chatId] = chatListIds[index]
+                    return (
+                      <div style={style}>
+                        <ChatListItem
+                          chatListItem={chatCache[chatId] || undefined}
+                          onClick={onChatClick.bind(null, chatId)}
+                        />
+                      </div>
+                    )
+                  }}
+                </ChatListPart>
               </div>
               <div className='group-separator'>
                 {!isBroadcast
