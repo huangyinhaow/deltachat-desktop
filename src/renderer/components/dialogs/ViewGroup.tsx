@@ -276,16 +276,12 @@ function ViewGroupInner(props: {
               <div className='group-separator'>
                 {tx('profile_shared_chats')}
               </div>
-              <div
-                style={{
-                  height: CHATLISTITEM_CHAT_HEIGHT * chatListIds.length,
-                }}
-              >
+              <div style={{ marginLeft: '-20px' }}>
                 <ChatListPart
                   isRowLoaded={isChatLoaded}
                   loadMoreRows={loadChats}
                   rowCount={chatListIds.length}
-                  width={'500px'}
+                  width={'400px'}
                   height={CHATLISTITEM_CHAT_HEIGHT * chatListIds.length}
                   itemKey={index => 'key' + chatListIds[index]}
                   itemHeight={CHATLISTITEM_CHAT_HEIGHT}
