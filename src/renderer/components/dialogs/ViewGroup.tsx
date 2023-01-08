@@ -260,9 +260,6 @@ function ViewGroupInner(props: {
           />
           <div className={Classes.DIALOG_BODY}>
             <Card>
-              <DeltaDialogContentTextSeperator
-                text={tx('profile_shared_chats')}
-              />
               <div className='group-settings-container'>
                 <ClickForFullscreenAvatarWrapper filename={groupImage}>
                   <Avatar
@@ -278,18 +275,8 @@ function ViewGroupInner(props: {
                 </p>
               </div>
               <div className='group-separator'>
-                {!isBroadcast
-                  ? tx(
-                      'n_members',
-                      groupMembers.length.toString(),
-                      groupMembers.length == 1 ? 'one' : 'other'
-                    )
-                  : tx(
-                      'n_recipients',
-                      groupMembers.length.toString(),
-                      groupMembers.length == 1 ? 'one' : 'other'
-                    )}
-              </div>
+                {tx('profile_shared_chats')}
+	      </div>
 	      <div style={{ height: 500 }}>
               <AutoSizer>
                 {({ width, height }) => (
@@ -316,6 +303,19 @@ function ViewGroupInner(props: {
                   </ChatListPart>
                 )}
               </AutoSizer>
+              </div>
+              <div className='group-separator'>
+                {!isBroadcast
+                  ? tx(
+                      'n_members',
+                      groupMembers.length.toString(),
+                      groupMembers.length == 1 ? 'one' : 'other'
+                    )
+                  : tx(
+                      'n_recipients',
+                      groupMembers.length.toString(),
+                      groupMembers.length == 1 ? 'one' : 'other'
+                    )}
               </div>
               <div className='group-member-contact-list-wrapper'>
                 {!chatDisabled && (
