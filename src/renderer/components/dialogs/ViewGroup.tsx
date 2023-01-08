@@ -277,7 +277,7 @@ function ViewGroupInner(props: {
               <div className='group-separator'>
                 {tx('profile_shared_chats')}
 	      </div>
-	      <div style={{ height: 500 }}>
+	      <div style={{height: CHATLISTITEM_CHAT_HEIGHT * chatListIds.length}}>
               <AutoSizer>
                 {({ width, height }) => (
                   <ChatListPart
