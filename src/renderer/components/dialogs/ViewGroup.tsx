@@ -260,6 +260,9 @@ function ViewGroupInner(props: {
           />
           <div className={Classes.DIALOG_BODY}>
             <Card>
+              <DeltaDialogContentTextSeperator
+                text={tx('profile_shared_chats')}
+              />
               <div className='group-settings-container'>
                 <ClickForFullscreenAvatarWrapper filename={groupImage}>
                   <Avatar
@@ -287,6 +290,33 @@ function ViewGroupInner(props: {
                       groupMembers.length == 1 ? 'one' : 'other'
                     )}
               </div>
+	      <div style={{ height: 500 }}>
+              <AutoSizer>
+                {({ width, height }) => (
+                  <ChatListPart
+                    isRowLoaded={isChatLoaded}
+                    loadMoreRows={loadChats}
+                    rowCount={chatListIds.length}
+                    width={width}
+                    height={height}
+                    itemKey={index => 'key' + chatListIds[index]}
+                    itemHeight={CHATLISTITEM_CHAT_HEIGHT}
+                  >
+                    {({ index, style }) => {
+                      const [chatId] = chatListIds[index]
+                      return (
+                        <div style={style}>
+                          <ChatListItem
+                            chatListItem={chatCache[chatId] || undefined}
+                            onClick={onChatClick.bind(null, chatId)}
+                          />
+                        </div>
+                      )
+                    }}
+                  </ChatListPart>
+                )}
+              </AutoSizer>
+              </div>
               <div className='group-member-contact-list-wrapper'>
                 {!chatDisabled && (
                   <>
@@ -311,34 +341,6 @@ function ViewGroupInner(props: {
                   onRemoveClick={showRemoveGroupMemberConfirmationDialog}
                 />
               </div>
-              <DeltaDialogContentTextSeperator
-                text={tx('profile_shared_chats')}
-              />
-              <AutoSizer>
-                {({ width, height }) => (
-              <ChatListPart
-                isRowLoaded={isChatLoaded}
-                loadMoreRows={loadChats}
-                rowCount={chatListIds.length}
-                width={width}
-                height={height}
-                itemKey={index => 'key' + chatListIds[index]}
-                itemHeight={CHATLISTITEM_CHAT_HEIGHT}
-              >
-                {({ index, style }) => {
-                  const [chatId] = chatListIds[index]
-                  return (
-                    <div style={style}>
-                      <ChatListItem
-                        chatListItem={chatCache[chatId] || undefined}
-                        onClick={onChatClick.bind(null, chatId)}
-                      />
-                    </div>
-                  )
-                }}
-              </ChatListPart>
-                 )}
-              </AutoSizer>
             </Card>
           </div>
         </>
