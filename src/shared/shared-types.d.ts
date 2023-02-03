@@ -63,6 +63,8 @@ export interface DesktopSettingsType {
   syncAllAccounts: boolean
   lastSaveDialogLocation: string | undefined
   experimentalEnableMarkdownInMessages: boolean
+  /** set to false to disable the confirmation dialog for loading remote content */
+  HTMLEmailAskForRemoteLoadingConfirmation: boolean,
 }
 
 export interface RC_Config {
