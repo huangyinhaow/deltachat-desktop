@@ -147,15 +147,16 @@ export default class DCWebxdc extends SplitOut {
                   ),
                 })
               } else {
-                const blob = Buffer.from(
-                  await this.rpc.getWebxdcBlob(
-                    open_apps[id].accountId,
-                    open_apps[id].msgId,
-                    filename
-                  ),
-                  'base64'
-                )
-                if (blob) {
+                try {
+                  const blob = Buffer.from(
+                    await this.rpc.getWebxdcBlob(
+                      open_apps[id].accountId,
+                      open_apps[id].msgId,
+                      filename
+                    ),
+                    'base64'
+                  )
+
                   callback({
                     mimeType: Mime.lookup(filename) || '',
                     data: blob,
@@ -165,8 +166,11 @@ export default class DCWebxdc extends SplitOut {
                           'Content-Security-Policy': CSP,
                         },
                   })
-                } else {
-                  callback({ statusCode: 404 })
+                } catch (error) {
+                  log.error('webxdc: load blob:', error)
+                  callback({
+                    statusCode: 404,
+                  })
                 }
               }
             }
