@@ -8,11 +8,7 @@ on:
 
 jobs:
   upload-preview:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
-      fail-fast: false
+    runs-on: windows-latest
     name: Upload Preview
     steps:
     # Preperation
@@ -34,20 +30,19 @@ jobs:
       if: runner.os == 'Windows'
       run: |
         set DEBUG=electron-builder
-        npm exec -- electron-builder --arm64 --win --config.artifactName="deltachat-desktop-win-arm64-${{ steps.prepare.outputs.prid }}.exe"
+        npm exec -- electron-builder --arm64 --win --config.artifactName="deltachat-desktop-win-arm64.exe"
     - name: WINDOWS renaming / upload Preperation
       if: runner.os == 'Windows'
       run: |
         cd dist
         dir
         mkdir preview
-        move deltachat-desktop-${{ steps.prepare.outputs.prid }}.exe preview/deltachat-desktop-${{ steps.prepare.outputs.prid }}.exe
+        move deltachat-desktop.exe preview/deltachat-desktop.exe
         dir preview
         cd ..
     # Upload Step
     - name: Upload result to artifacts
-      if: steps.upload.outcome == 'failure'
       uses: actions/upload-artifact@master
       with:
-        name: ${{ matrix.os }} output
+        name: windows
         path: dist/preview/
