@@ -2,14 +2,9 @@
 name: Preview Builds
 
 on: 
-  pull_request:
-    paths-ignore:
-      - 'docs/**'  # only trigger build if a file outside of /docs was changed
-      - 'README_ASSETS/**'
-      - 'test/**'
-      - '*.md'
-      - '.prettierrc.yml'
-      - '.vscode/**'
+  push:
+    branches:
+      - master
 
 jobs:
   upload-preview:
