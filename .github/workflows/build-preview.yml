@@ -20,7 +20,7 @@ jobs:
       run: |
         npm install
         npm run build
-        npm exec -- electron-builder --arm64 --win --config.artifactName="deltachat-desktop-win-arm64.exe"
+        publish=never npm exec -- electron-builder --arm64 --win --config.artifactName="deltachat-desktop-win-arm64.exe"
     - name: WINDOWS renaming / upload Preperation
       if: runner.os == 'Windows'
       run: |
