@@ -26,10 +26,6 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: 16.x
-    - name: Get Pullrequest ID
-      id: prepare
-      run: |
-        node -e "console.log('::set-output name=prid::' + '${{ github.ref }}'.split('/')[2])"
     - name: change build name and Product Name to development id
       run: |
         node ./bin/github-actions/devbuild.js
@@ -39,66 +35,21 @@ jobs:
         npm install
         npm run build
         npm run pack:generate_config
-    # Packaging and processing
-    - name: LINUX electron builder
-      if: runner.os == 'Linux'
-      run: |
-        export DEBUG=electron-builder
-        npm exec -- electron-builder --publish never --linux AppImage
-    - name: LINUX renaming / upload Preperation
-      if: runner.os == 'Linux'
-      run: |
-        cd dist
-        mkdir preview
-        mv *.AppImage preview/deltachat-desktop-${{ steps.prepare.outputs.prid }}.AppImage
-        ls preview
-        cd ..
-    - name: MAC electron builder
-      if: runner.os == 'macOS'
-      run: |
-        echo "module.exports=()=>Promise.resolve()" > stub.js
-        export CSC_IDENTITY_AUTO_DISCOVERY=false
-        export DEBUG=electron-builder
-        npm i dmg-license
-        npm exec -- electron-builder --publish never --mac mas dmg -c.mac.identity=null --config.afterSign="stub.js" || true
-    - name: MAC renaming / upload Preperation
-      if: runner.os == 'macOS'
-      run: |
-        mkdir -p dist/preview
-        zip -r dist/preview/deltachat-desktop-mas-${{ steps.prepare.outputs.prid }}.zip dist/mas
-        cd dist
-        mv *.dmg preview/deltachat-desktop-${{ steps.prepare.outputs.prid }}.dmg || true
-        cd ..
-        ls dist/preview
     - name: WINDOWS electron builder
       if: runner.os == 'Windows'
       run: |
         set DEBUG=electron-builder
-        npm exec -- electron-builder --win portable --config.artifactName="deltachat-desktop-${{ steps.prepare.outputs.prid }}.portable.exe"
+        npm exec -- electron-builder --arm64 --win --config.artifactName="deltachat-desktop-win-arm64-${{ steps.prepare.outputs.prid }}.exe"
     - name: WINDOWS renaming / upload Preperation
       if: runner.os == 'Windows'
       run: |
         cd dist
         dir
         mkdir preview
-        move deltachat-desktop-${{ steps.prepare.outputs.prid }}.portable.exe preview/deltachat-desktop-${{ steps.prepare.outputs.prid }}.portable.exe
+        move deltachat-desktop-${{ steps.prepare.outputs.prid }}.exe preview/deltachat-desktop-${{ steps.prepare.outputs.prid }}.exe
         dir preview
         cd ..
     # Upload Step
-    - name: upload folder
-      id: upload
-      shell: bash
-      run: |
-        echo -e "${{ secrets.KEY }}" >__TEMP_INPUT_KEY_FILE
-        chmod 600 __TEMP_INPUT_KEY_FILE
-        scp -o StrictHostKeyChecking=no -v -i __TEMP_INPUT_KEY_FILE -P "22" -r dist/preview/* "${{ secrets.USERNAME }}"@"download.delta.chat":"/var/www/html/download/desktop/preview/"
-      continue-on-error: true
-    - name: "Post links to details"
-      if: steps.upload.outcome == 'success'
-      run: node ./bin/github-actions/postLinksToDetails.js
-      env:
-       PR_ID: ${{ steps.prepare.outputs.prid }}
-       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - name: Upload result to artifacts
       if: steps.upload.outcome == 'failure'
       uses: actions/upload-artifact@master
